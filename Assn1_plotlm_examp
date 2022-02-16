@@ -1,0 +1,123 @@
+# Question 3 on assignment 1 data sorting by categorical variable
+data1 <- read.csv("C:/Users/81hoc/OneDrive/Documents/Biometry/Biom_Assn/Assignment1/asst1_2021_sheet1.csv")
+data1
+?order()
+data1$X <- NULL
+data1$X.1 <- NULL
+sorteddit <- order(data1$class)
+sorteddit.2 <- order(data1$x1)
+sort.edit.final <- data1[order(data1$class),] # have to run this with the data nulls at the same time
+
+##############################################################
+# Question 4 on assignment 1
+data2 <- read.csv("C:/Users/81hoc/OneDrive/Documents/Biometry/Biom_Assn/Assignment1/asst1_2021_sheet2.csv")
+data2
+#library(plyr)
+#mean.data2.hxa <- ddply(data2, c("age"), summarise,
+#                        N = sum(!is.na(height..cm.)),
+#                        mean = mean(height..cm.,na.rm=TRUE),
+#                        sd =sd(height..cm.,na.rm=TRUE),
+#                        se =sd / sqrt(N))
+#mean.data2.mxa <- ddply(data2, c("age"), summarise,
+#                        N = sum(!is.na(mass..g.)),
+#                        mean = mean(mass..g.,na.rm=TRUE),
+#                        sd =sd(mass..g.,na.rm=TRUE),
+#                        se =sd / sqrt(N))
+mean.data2.hamxa <- ddply(data2, c("age"), summarise,
+                          meanheight = mean(height..cm.,na.rm=TRUE),
+                          meanmass = mean(mass..g.,na.rm=TRUE),
+                          cvheight = sd(height..cm.,na.rm=TRUE)/mean(height..cm.,na.rm=TRUE),
+                          cvmass = sd(mass..g.,na.rm=TRUE)/mean(mass..g.,na.rm=TRUE))
+
+# run the par function with the 4 plot functions below
+par(mfrow=c(2,2))
+
+plot(mean.data2.hamxa$age, mean.data2.hamxa$meanheight, type = "o", xlab = "age(years)", ylab = "mean height")
+plot(mean.data2.hamxa$age, mean.data2.hamxa$meanmass, type = "o", xlab = "age(years)", ylab = "mean mass")
+plot(mean.data2.hamxa$age, mean.data2.hamxa$cvheight, type = "o", xlab = "age(years)", ylab = "cv height")
+plot(mean.data2.hamxa$age, mean.data2.hamxa$cvmass, type = "o", xlab = "age(years)", ylab = "cv mass")
+
+#mai(
+#mar(
+#oma(
+
+#install.packages("sciplot")
+par(mfrow=c(1,1)) # run par function with the lineplot function below
+lineplot.CI(data2$age, data2$mass..g.) #standard error bars are set to one standard error
+
+###############################################################
+##### Question 5###
+
+data3 <- read.csv("C:/Users/81hoc/OneDrive/Documents/Biometry/Biom_Assn/Assignment1/asst1_2021_sheet3.csv")
+data3
+
+head(data3)
+range(data3$Length..mm.)
+
+# below is code for column called age category and is assigned to bins by 10mm intervals
+data3$agecat[data3$Length..mm. >= 70 & data3$Length..mm. < 80] <- 80
+data3$agecat[data3$Length..mm. >= 80 & data3$Length..mm. < 90] <- 90
+data3$agecat[data3$Length..mm. >= 90 & data3$Length..mm. < 100] <- 100
+data3$agecat[data3$Length..mm. >= 100 & data3$Length..mm. < 110] <- 110
+data3$agecat[data3$Length..mm. >= 110 & data3$Length..mm. < 120] <- 120
+data3$agecat[data3$Length..mm. >= 120 & data3$Length..mm. < 130] <- 130
+data3$agecat[data3$Length..mm. >= 130 & data3$Length..mm. < 140] <- 140
+data3$agecat[data3$Length..mm. >= 140 & data3$Length..mm. < 150] <- 150
+
+complete.cases(data3$agecat)
+
+data3_pop1<- subset(data3, data3$Population == "1")
+data3_pop2<- subset(data3, data3$Population == "2")
+
+pop1_sum<-count(data3_pop1, vars = "agecat")
+pop2_sum<-count(data3_pop2, vars = "agecat")
+
+### plot for 5####
+par(mfrow=c(1,1))
+
+barplot(pop1_sum$freq ~ pop1_sum$agecat, #plot of the mean mass as a function of age    
+        col = "black",ylim = range(0:40), cex.lab =1.1, space = 1,                  
+        width = 0.5, axes = FALSE, xlab = "", xaxt = "n",
+        xlim = c(0, 9), ylab = "")                  
+
+barplot(pop2_sum$freq, width = 0.5, space = c(6,1,1,1,1,1),
+        axes = NULL, ylab = "", xlab ="", add =T)
+
+# tick = false gets rid of the tick marks on the plot
+axis(1, labels = c("70","80","90","100","110","120","130","140"), at = c(1,2,3,4,5,6,7,8))
+# las modifies the orientation of tick mark lables and text added to a plot
+axis(2, las = 2)
+
+mtext(side = 2, "Frequency", line = 3)
+mtext(side = 1, "Size Class", line = 3)
+
+legend("topleft",
+       legend= c("Population 1", "Population 2"), # legend text
+       pch=c(17, 17),               # point type
+       col=c("black", "grey"))     # color
+
+box()
+
+################# Q6 #######################
+
+data4 <- read.csv("C:/Users/81hoc/OneDrive/Documents/Biometry/Biom_Assn/Assignment1/asst1_2021_sheet4.csv")
+
+subsA <- subset(data4, Species == "A")
+subsB <- subset(data4, Species == "B")
+
+par(mfrow=c(1,1))
+Q6_plot <-plot(data4$length..cm., data4$mass..kg., axes = F, type="n",
+     xlab="Length", ylab ="Mass")
+axis(1)
+axis(2)
+
+# linear regression lines
+points(subsA$length..cm., subsA$mass..kg., cex = 0.9, pch =18)
+points(subsB$length..cm., subsB$mass..kg., cex = 0.9, pch =1)
+
+#abline(lm(subsA$length..cm. ~ subsA$mass..kg., data = subsA), lty = 5)
+#abline(lm(subsB$length..cm. ~ subsB$mass..kg., data = subsB), lty = 1)
+
+legend("topleft", legend = c("Species A", "Species B"),
+       pch=c(18, 1),
+       col=c("black", "grey"))
