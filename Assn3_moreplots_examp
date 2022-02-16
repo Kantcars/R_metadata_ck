@@ -1,0 +1,51 @@
+################# Assignment 3 ##############
+library(sciplot)
+library(ggplot2)
+### Q1
+
+data1 <- read.csv("C:/Users/81hoc/OneDrive/Documents/Biometry/Biom_Assn/Assignment3/asst3_2021.csv")
+
+x <- data1$observation
+
+Population_1 <- mean(data1$Mass.pop1..g.)
+Population_2 <- mean(data1$Mass.pop2..g.)
+
+sePopulation_1 <- sd(data1$Mass.pop1..g.)/sqrt(length(data1$Mass.pop1..g.))
+sePopulation_2 <- sd(data1$Mass.pop2..g.)/sqrt(length(data1$Mass.pop2..g.))
+
+stan.errors <- c(24.1, 2.13)
+
+sumtable <- cbind(Population_1,Population_2)
+
+par(mfrow = c(1,1))
+q1barplot <- barplot((sumtable[,1:2]), ylim = c(0,100),
+                     xlab ="",
+                     ylab = "Snake Mass in Grams",
+                     col = "white")
+# creates standard error bars
+arrows(q1barplot, x0 = (sumtable[,1:2]), y0 = 62.18-sePopulation_1, angle =90, col = "black")
+
+axis(2, at = c(0, 10, 20, 30, 40, 50, 60, 70, 80,90,100), cex = 1, outer = T,
+     labels = c("0","10","20","30","40","50","60","70","80","90","100"))
+box()
+#srt or las change nuber orientation las = 1
+#geom_errorbar(aes(sumtable[,1:2]), )
+#?geom_errorbar
+### Q2 ##############################################
+
+Pop1 <- mean(log10(data1$Mass.pop1..g.))
+Pop2 <- mean(log10(data1$Mass.pop2..g.))
+
+sepop1 <- sd(log10(data1$Mass.pop1..g.))/sqrt(log10(length(data1$Mass.pop1..g.)))
+sepop2 <- sd(log10(data1$Mass.pop2..g.))/sqrt(log10(length(data1$Mass.pop2..g.)))
+
+se1.2 <- c(0.593, 0.295)
+
+sumtable.2 <- cbind(Pop1,Pop2)
+
+q2barplot <- barplot((sumtable.2[,1:2]), ylim = c(0,2),
+                     xlab = "",
+                     ylab = "Log10 transformation of mass in grams of snakes",
+                     col = "white")
+segments(q2barplot, x0= , y0 = , col = "black")
+box()
