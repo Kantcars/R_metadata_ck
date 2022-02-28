@@ -1,0 +1,99 @@
+################# Assignment 7 #############
+setwd("C:/Users/81hoc/OneDrive/Documents/Biometry/Biom_Assn/Assignment7")
+#install.packages()
+library(lmodel2)
+library(ggplot2)
+### Q1
+q1 <- read.csv("asst7_2021_sheet1.csv")
+#orders the data
+order(q1$entscore)
+order(q1$freshman.gpa)
+# == is exact value
+#create linear models
+ISU.model <- lm(q1$freshman.gpa[q1$school == "1"]~q1$entscore[q1$school == "1"])
+BYU.model <- lm(q1$freshman.gpa[q1$school == "2"]~q1$entscore[q1$school == "2"])
+coef(ISU.model)
+coef(BYU.model)
+#summaries for both linear models
+summary(ISU.model)
+summary(BYU.model)
+#create lines for BYU and ISU lm models
+ISU.y <- predict(lm(q1$freshman.gpa[q1$school == "1"]~q1$entscore[q1$school == "1"]))
+BYU.y <- predict(lm(q1$freshman.gpa[q1$school == "2"]~q1$entscore[q1$school == "2"]))
+
+# run ancova model
+Ancova.mod1 <- aov(q1$freshman.gpa~q1$entscore + q1$school + q1$entscore * q1$school, data = q1)
+
+summary(Ancova.mod1)
+
+plot(q1$entscore, q1$freshman.gpa, type = "n", xlab = "Entrance Score",
+     ylab = "Freshman GPA", las = 1)
+#plot the points for ISU and BYU data
+points(q1$freshman.gpa[q1$school == "1"]~q1$entscore[q1$school == "1"])
+points(q1$freshman.gpa[q1$school == "2"]~q1$entscore[q1$school == "2"])
+
+# create lines for both ISU and BYU data
+segments(min(q1$entscore[q1$school == "1"]), min(ISU.y), max(q1$entscore[q1$school == "1"]), max(ISU.y), lwd = 2)
+segments(min(q1$entscore[q1$school == "2"]), min(BYU.y), max(q1$entscore[q1$school == "2"]), max(BYU.y), lwd = 2, lty = 2)
+
+
+
+
+
+
+
+
+
+
+############################################
+### Q2
+q2 <- read.csv("asst7_2021_sheet2.csv")
+#log transform the data
+logmass <- log10(q2$mass_kg)
+logh.r <- log10(q2$homerange_km2)
+# create linear model using the logged data
+model1.2 <- lm(logh.r~logmass)#df = 53, p-value = p < 0.0001, f-stat = 80 on 1
+summary(model1.2)
+coef(model1.2)
+
+t.test(logh.r, logmass)#df = 97.874, p-value = p < 0.0001, t = -6.0817
+
+#plot of the linear model OLS
+plot(logh.r, logmass, type = "p", axes = FALSE, xlab = "log10(Homerange(km^2))",
+     ylab = "log10(Mass(kg))")
+y.2 <- predict(lm(logmass~logh.r))
+lines(logh.r, y.2, lwd = 2)
+axis(1, at = c(-1,0,1,2,3,4,5), labels = c("-1","0","1","2","3","4","5"))
+axis(2, at = c(1,2,3,4,5,6), labels = c("1","2","3","4","5","6"), las = 1)
+box()
+
+#plot of RMA
+model2.2 <- lmodel2(logmass~logh.r, range.x = "interval", range.y = "interval")
+summary(model2.2)
+plot(model2.2, method = "RMA")
+
+
+
+
+
+
+
+
+###########################################
+### Q3
+q3 <- read.csv("asst7_2021_sheet3.csv")
+
+order(q3$piscat)
+
+glm.fish <- glm(q3$piscat~q3$habitat + (log10(q3$fl_cm)), family = binomial)
+summary(glm.fish)
+coef(glm.fish)
+glm.probs <- predict(glm.fish, type = "response")
+glm.probs[1:204]
+
+#plot(glm.fish, type = "p")
+
+plot(log10(q3$fl_cm+q3$habitat),q3$piscat, type = "p", xlab = "fl(cm) + habitat", ylab = "picavory")
+lines(glm.probs)
+#need to backtransform values
+#can't get my logistic lines to work.
