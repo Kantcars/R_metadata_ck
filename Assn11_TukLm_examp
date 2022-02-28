@@ -1,0 +1,54 @@
+setwd("C:/Users/81hoc/OneDrive/Documents/Biometry/Biom_Assn/Assignment11")
+###################### Assignment 11 ######################
+library(car)
+### Q1
+q1 <- read.csv("Asst11_2021_sheet1.csv")
+
+q1$method <- as.factor(q1$method)# set to factors
+q1$variety <- as.factor(q1$variety)
+
+mod1 <- lm(yield ~ method + variety + method*variety, data=q1)# linear model
+summary(mod1)
+
+options(contrasts = c("contr.sum", "contr.poly"))
+
+Anova(mod1, type = "III")# runs an analysis of variance
+
+fixed.p <- pf(q=(925.2/2)/(373.8/8), df1 = 2, df2 = 8, lower.tail = F) # fixed p-value done by hand
+print(fixed.p)
+
+library(lme4) #linear mixed effects model
+library(nlme)
+
+model1 = lmer(yield ~ method + (1|variety) + (1|variety : method) , #full model with interaction term
+              data=q1,
+              REML=TRUE)
+summary(model1)
+library(lmerTest)
+step(model1)
+
+library(plyr)
+
+emq1 <- emmeans(model1, ~"method", adjust = "tukey")
+summary(emq1)
+
+#TukeyHSD()
+
+ddply(q1, c("q1$method", "q1$variety"))
+
+q1$variety <- as.numeric(q1$variety)
+q1$method <- as.numeric(q1$method)
+
+plot(q1$variety, q1$yield, type = "n", axes = FALSE, xlab = "variety", ylab = "yield")
+lines(q1[1:29,2], q1[1:29,3], type = "l", lwd = 1, lty = 1)
+lines(q1[30:59,2], q1[30:59,3], type = "b", lwd = 2, lty = 2, pch = 19)
+lines(q1[60:89,2], q1[60:89,3], type = "b", lwd = 3, lty = 3, pch = 18, col = "blue")
+axis(2, at = c(10,15,20,25), labels = c("10","15","20","25"), las =1)
+axis(1, at = c(1,2,3,4,5), labels = c("1","2","3","4","5"))
+box()
+
+
+
+plot(emq1)
+?plot
+
