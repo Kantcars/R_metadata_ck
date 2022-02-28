@@ -1,0 +1,54 @@
+#################### Assignment 8 #####################
+setwd("C:/Users/81hoc/OneDrive/Documents/Biometry/Biom_Assn/Assignment8/")
+### Q1
+#read in adjusted csv so it can be plotted
+q1 <- read.csv("asst8_2021_sheet2_1.csv")
+#select sciplot package
+library(sciplot)
+#creates bargraph representing ANOVA output
+bargraph.CI(q1$Observation,q1$data, xlab = "Observation", ylab = "Data", ylim = c(0,70), xaxt = "n", axes = FALSE)
+axis(1, at = c(0.7,1.9,3.1,4.3,5.5,6.7,7.9), labels = c("1","2","3","4","5","6","7"))
+axis(2, at = c(0,10,20,30,40,50,60,70), labels = c("0","10","20","30","40","50","60","70"), las = 1)
+box()
+
+
+
+
+
+
+
+
+
+
+
+
+###############################
+### Q2
+q2 <- read.csv("asst8_2021_sheet2_2.csv")
+
+anova.1 <- aov(q2$Height~q2$Treatment)
+summary(ancova.1)
+
+bargraph.CI(q2$Treatment,q2$Height, xlab = "Sugar Treatment",
+            ylab = "Pea Plant Length(mm)", ylim = c(0,80), xaxt = "n", axes = FALSE)
+axis(1, at = c(0.7,1.9,3.1,4.3,5.5),
+     labels = c("NO Sugar","Glucose","Fructose","GlucoFructo","Sucrose"), tick = TRUE)
+axis(2, at = c(0,10,20,30,40,50,60,70,80),
+     labels = c("0","10","20","30","40","50","60","70","80"), las = 1)
+box()
+
+
+###############################
+### Q3
+q3 <- read.csv("asst8_2021_sheet4.csv")
+
+anova.2 <- aov(q3$Food_Intake~q3$Treatment)
+summary(anova.2)
+
+bargraph.CI(q3$Treatment, q3$Food_Intake, xlab = "Treatment",
+            ylab = "Food Intake (mm)", ylim = c(0,800), xaxt = "n", axes = FALSE)
+axis(1, at = c(0.7,1.9,3.1), labels = c("0 mm Hg","10 mm Hg","20 mm Hg"))
+axis(2, at = c(0,100,200,300,400,500,600,700,800),
+     labels = c("0","100","200","300","400","500","600","700","800"))
+box()
+
