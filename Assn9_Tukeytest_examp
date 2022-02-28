@@ -1,0 +1,72 @@
+setwd("C:/Users/81hoc/OneDrive/Documents/Biometry/Biom_Assn/Assignment9/")
+############### Assignment 9 ###########################
+library(car)
+install.packages()
+library(qtl)
+library(plyr)
+library(ggplot2)
+### Q1
+q1 <- read.csv("asst9_2021_sheet1.csv")
+
+q1samp <- as.factor(q1$sample)
+q1treat <- as.factor(q1$treatment)
+q1plot <- as.factor(q1$plot)
+
+q1$logdens <- log10(q1$density)
+
+fit = aov(q1$logdens~q1treat + Error(q1plot), data = q1)
+summary(fit)
+
+bargraph.CI(q1$logdens,q1$treat)
+
+#statiscal significance calculation for f-ratio
+within_p <- pf(1.058/0.1918, df1 = 16, df2 = 100, lower.tail = F)
+within_p
+# = 2.84x10^-8
+
+data <- ddply(q1, c("q1treat","q1plot"), 
+              summarise, logdens = mean(q1$logdens))
+
+fit2 <- lm(logdens~q1treat, data = data)
+summary(fit2)
+
+Tuktest<- TukeyHSD(aov(fit2),"q1treat",conf = 0.95)
+summary(Tuktest)
+
+bargraph.CI(Tuktest)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#############################################
+### Q2
+q2 <- read.csv("asst9_2021_sheet2_1.csv")
+df2 = read.table("q2asn9.txt", header=TRUE)
+
+r = c(t(as.matrix(df2))) # response data 
+r 
+
+f = c("basin", "flood", "spray", "sprnkler", "trickle")   # treatment levels 
+k = 5                    # number of treatment levels 
+n = 8                    # number of control blocks
+
+tm = gl(k, 1, n*k, factor(f))   # matching treatment 
+tm 
+
+blk = gl(n, k, k*n)             # blocking factor 
+blk 
+
+anova.2 <- aov(r~ tm + blk)
+summary(anova.2)
+
+bargraph.CI(df2[,1:5], df2[1:8,])
