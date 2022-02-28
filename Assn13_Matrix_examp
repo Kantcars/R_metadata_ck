@@ -1,0 +1,125 @@
+setwd("C:/Users/81hoc/OneDrive/Documents/Biometry/Biom_Assn/Assignment 13")
+##################### Assignment 13 #####################
+
+input=("
+      hair.color  blue	brown	green
+      dark    66	  110	  37
+      fair	  69	  90  	69
+      red	    28	  47  	38
+        ")
+
+table2 = as.matrix(read.table(textConnection(input),
+                              header=TRUE,
+                              row.names=1))
+print(table2)   
+
+print(chisq.test(table2, correct=FALSE))    # No continuity correction for 2 x 2
+#      table
+
+print(fisher.test(table2, alternative="two.sided") )
+
+#https://www.statmethods.net/advgraphs/mosaic.html
+# Mosaic Plot Example
+#In RStudio - output window may constrain plot features in an odd way. Resize window
+# or run in R console window, directly
+#install.packages()
+library(vcd)
+mosaic(table2, shade=TRUE, legend=TRUE) 
+
+#association plot
+assoc(table2, shade=TRUE)
+
+##############################################################
+
+vampire <- read.csv(url("http://www.zoology.ubc.ca/~schluter/WhitlockSchluter/wp-content/data/chapter09/chap09e5VampireBites.csv"))
+
+vampireTable <- table(vampire$bitten, vampire$estrous)
+vampireTable
+
+saveTest <- chisq.test(vampire$bitten, vampire$estrous, correct = FALSE) 
+saveTest$expected
+
+fisher.test(vampire$bitten, vampire$estrous)
+
+##############################################################
+
+input=("
+      diet.diseased  yes   no
+      high	         11	  4	  
+      low	           2	  6  
+              ")
+
+table2 = as.matrix(read.table(textConnection(input),
+                              header=TRUE,
+                              row.names=1))
+print(table2)   
+
+print(chisq.test(table2,
+                 correct=FALSE)   )    # No continuity correction for 2 x 2
+#      table
+
+print(fisher.test(table2,
+                  alternative="two.sided") )
+
+
+#https://www.statmethods.net/advgraphs/mosaic.html
+# Mosaic Plot Example
+mosaic(table2, shade=TRUE, legend=TRUE) 
+
+#association plot
+assoc(table2, shade=TRUE)
+
+##################################################
+
+#example of chi-squared test and G-test
+#https://whitlockschluter.zoology.ubc.ca/r-code/rcode09
+
+
+worm <- read.csv(url("http://www.zoology.ubc.ca/~schluter/WhitlockSchluter/wp-content/data/chapter09/chap09e4WormGetsBird.csv"))
+
+head(worm)
+
+wormTable <- table(worm$fate, worm$infection)
+addmargins(wormTable)
+
+mosaicplot( t(wormTable), col = c("firebrick", "goldenrod1"), cex.axis = 1, 
+            sub = "Infection status", ylab = "Relative frequency")
+
+saveChiTest <- chisq.test(worm$fate, worm$infection, correct = FALSE)
+saveChiTest
+
+#The expected frequencies under null hypothesis 
+
+addmargins(saveChiTest$expected)
+
+#G-test applied to the worm-gets-bird data (Section 9.6). R has no simple, built-in function to carry out the G-test with #goodness-of-fit data. Code for a command g.test by Brent Larget is available here. Below, we source this code, which then #allows you to use his function g.test.
+
+source("http://www.stat.wisc.edu/~st571-1/gtest.R")
+g.test(wormTable)
+
+########################################################
+
+titanic <- read.csv(url("http://www.zoology.ubc.ca/~schluter/WhitlockSchluter/wp-content/data/chapter09/chap09f1.1Titanic.csv"))
+head(titanic)
+
+#make contingency table
+
+titanicTable <- table(titanic$survival, titanic$sex)
+addmargins(titanicTable)
+
+mosaicplot( t(titanicTable), col = c("firebrick", "goldenrod1"), cex.axis = 1, 
+            sub = "Sex", ylab = "Relative frequency", main = "")
+
+box()
+
+######################################################
+
+cancer <- read.csv(url("http://whitlockschluter.zoology.ubc.ca/wp-content/data/chapter09/chap09e2AspirinCancer.csv"))
+head(cancer)
+
+cancerTable <- table(cancer$cancer, cancer$aspirinTreatment)
+cancerTable
+
+mosaicplot( t(cancerTable), col = c("firebrick", "goldenrod1"), cex.axis = 1, 
+            sub = "Aspirin treatment", ylab = "Relative frequency", main = "")
+
