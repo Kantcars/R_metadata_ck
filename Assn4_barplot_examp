@@ -1,0 +1,105 @@
+install.packages("Rmisc")
+library(Rmisc)
+library(plyr)
+library(sciplot)
+###################### Assignment 4 ########################
+##### Q1
+a4q1 <- read.csv("C:/Users/81hoc/OneDrive/Documents/Biometry/Biom_Assn/Assignment4/asst4_2021_sheet1.csv")
+attach(a4q1)
+ci1.1 <- summarySE(data = a4q1, measurevar = "birth.rate",
+          groupvars = "region", na.rm = FALSE, conf.interval = 0.90)
+ci1.2 <- summarySE(data = a4q1, measurevar = "birth.rate",
+          groupvars = "region", na.rm = FALSE, conf.interval = 0.95)
+ci1.3 <- summarySE(data = a4q1, measurevar = "birth.rate",
+          groupvars = "region", na.rm = FALSE, conf.interval = 0.99)
+
+ci2.1 <- summarySE(data = a4q1, measurevar = "death.rate",
+          groupvars = "region", na.rm = FALSE, conf.interval = 0.90)
+ci2.2 <- summarySE(data = a4q1, measurevar = "death.rate",
+          groupvars = "region", na.rm = FALSE, conf.interval = 0.95)
+ci2.3 <- summarySE(data = a4q1, measurevar = "death.rate",
+          groupvars = "region", na.rm = FALSE, conf.interval = 0.99)
+
+m1 <- matrix(scan("C:/Users/81hoc/OneDrive/Documents/Biometry/Biom_Assn/Assignment4/q1birth.txt"), ncol =4, byrow = T)
+m2 <- matrix(scan("C:/Users/81hoc/OneDrive/Documents/Biometry/Biom_Assn/Assignment4/q1death.txt"), ncol =4, byrow = T)
+
+
+par(mfrow = c(2,1))
+par(oma = c(4,4,1,5))
+par(mar = c(0,0,0,0))
+
+x <- barplot(m1[,1:2], beside = T, xlab ="", ylab ="",
+        ylim = c(1,20), xaxt = "n", axes = FALSE, density = c(100,0,20,20), angle = c(09,0,45,135))
+axis(2, at = c(0,2,4,6,8,10,12,14,16,18,20),
+     las=1, labels = c("","","4","6","8","10","12","14","16","18","20"), tick = TRUE)
+arrows(x,   (m1[,1:2]) , x, (m1[,1:2] + m1[,3:4]), length = 0.03, code =2, angle = 90, col=1)
+legend("topleft", legend = "Region 1")
+box()
+
+x.1 <- barplot(m2[,1:2], beside = T, xlab = "", ylab = "",
+         ylim = c(1,12), xaxt = "n", axes = FALSE, density = c(100,0,20,20), angle = c(90,0,45,135))
+arrows(x.1,   (m2[,1:2]) , x.1, (m2[,1:2] + m2[,3:4]), length = 0.03, code =2, angle = 90, col=1)
+axis(2, at=, las =1, tick = TRUE)
+axis(1, at = c(3,8), labels = c("Birthrate", "Deathrate"))
+legend("topleft", legend = "Region 2")
+box()
+
+############################################################
+##### Q2
+a4q2 <- read.csv("C:/Users/81hoc/OneDrive/Documents/Biometry/Biom_Assn/Assignment4/asst4_2021_sheet2.csv")
+
+pop.sort <- a4q2[order(a4q2$pop),]
+
+stat.verb <- t.test(sat.verb~pop, data = a4q2,
+                     var.equal = TRUE, conf.level = 0.95)
+stat.quant <- t.test(sat.quant~pop, data = a4q2,
+                     var.equal = TRUE, conf.level = 0.95)
+
+par(mfrow=c(1,2))
+bargraph.CI(a4q2$pop, a4q2$sat.verb, col = "white",
+            xlab = "", ylab = "Scores", xaxt = "n", axes = FALSE, ylim = c(1,700))
+axis(1, at = c(0.7,2), labels = c("Pop1","Pop2"))
+axis(2, at = c(0,100,200,300,400,500,600,700), las = 1,
+     labels = c("0","100","200","300","400","500","600","700"))
+legend("topleft",
+       legend= c("Verb", "Quant"),
+       pch=c(22, 15),
+       col=c("white", "black"))
+box()
+bargraph.CI(a4q2$pop, a4q2$sat.quant, col = "black",
+            xlab = "", ylab = "", xaxt = "n", axes = FALSE, ylim = c(1,700))
+axis(1, at = c(0.7,2), labels = c("Pop1","Pop2"))
+box()
+
+
+############################################################
+#### Q3
+
+a4q3 <- read.csv("C:/Users/81hoc/OneDrive/Documents/Biometry/Biom_Assn/Assignment4/asst4_2021_sheet3.csv")
+
+bull.t <- t.test(mass_kg~sex, data = a4q3,
+       var.equal = TRUE, conf.level = 0.95)  #t-test for the bull trout data
+par(mfrow = c(1,1)) # graphical parameters
+bull.t.plot <- bargraph.CI(a4q3$sex, a4q3$mass_kg, col = "black",
+            xlab ="Sex", ylab = "Mass(kg)", xaxt = "n", axes = FALSE, ylim = c(1,30)) #Barplot for the bulltrout data
+axis(1, c(0.7,1.9), labels = c("Female","Male")) # manipulates bottom axis
+axis(2, at = c(0,5,10,15,20,25,30), las = 1,
+     labels = c("0","5","10","15","20","25","30")) #manipulates side axis
+box()
+
+
+############################################################
+#### Q4
+
+a4q4 <- read.csv("C:/Users/81hoc/OneDrive/Documents/Biometry/Biom_Assn/Assignment4/asst4_2021_sheet4.csv")
+
+baseb.t <- t.test(salary_x_103dpy~league, data = a4q4,
+       var.equal = TRUE, conf.level = 0.95)
+
+par(mfrow = c(1,1))
+baseb.plot <- bargraph.CI(a4q4$league, a4q4$salary_x_103dpy, col = "black",
+            xlab = "League", ylab = "Salary X 103 dollars per year", xaxt = "n", axes = FALSE, ylim = c(1,600))
+axis(1, at = c(0.7,1.9), labels = c("American", "National"))
+axis(2, at = c(0,100,200,300,400,500,600), las = 1,
+     labels = c("0","100","200","300","400","500","600"))
+box()
