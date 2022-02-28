@@ -1,0 +1,111 @@
+####################### Assignment 6 #######################
+library(car)
+library(MASS)
+setwd("C:/Users/81hoc/OneDrive/Documents/Biometry/Biom_Assn/Assignment6")# set the working directory
+### Q1
+
+q1 <- (read.csv("asst6_2021_sheet1.csv", header = TRUE))
+
+q1.logFEV <- log10(q1$FEV)
+
+FEV.lm <- lm(q1$FEV~q1$Smoke + q1$Ht + q1$Age + q1$Gender)
+FEV.res <- resid(FEV.lm)
+
+summary(FEV.lm)
+
+par(mfrow = c(2,2), mar = c(2,2,2,2), oma = c(2,2,0,0))
+
+plot(q1$Smoke, q1$FEV, type = "p", axes = FALSE)
+axis(2, at = c(1,2,3,4,5), las = 1, labels = c("1","2","3","4","5"))
+axis(1, at = c(0.0,1.0), labels = c("0","1"))
+legend("topleft", legend = "(a)")
+y.4 <- predict(lm(q1$FEV~q1$Smoke))
+lines(q1$Smoke, y.4, lwd = 2)
+box()
+
+plot(q1$Gender, q1$FEV, type = "p", axes = FALSE)
+axis(2, at = c(1,2,3,4,5), las = 1, labels = c("1","2","3","4","5"))
+axis(1, at = c(0.0,1.0), labels = c("0","1"))
+legend("topleft", legend = "(b)")
+y.3 <- predict(lm(q1$FEV~q1$Gender))
+lines(q1$Gender, y.3, lwd = 2)
+box()
+
+plot(q1$Ht, q1$FEV, type = "p", axes = FALSE)
+axis(2, at = c(1,2,3,4,5), las = 1, labels = c("1","2","3","4","5"))
+axis(1, at = c(45,50,55,60,65,70,75),
+     labels = c("45","50","55","60","65","70","75"))
+legend("topleft", legend = "(c)")
+y <- predict(lm(q1$FEV~q1$Ht))
+lines(q1$Ht, y, lwd =2)
+box()
+
+plot(q1$Age, q1$FEV, type = "p", axes = FALSE)
+axis(2, at = c(1,2,3,4,5), las = 1, labels = c("1","2","3","4","5"))
+axis(1, at = c(5,10,15,20), labels = c("5","10","15","20"))
+legend("topleft", legend = "(d)")
+y.2 <- predict(lm(q1$FEV~q1$Age))
+lines(q1$Age, y.2, lwd = 2)
+box()
+mtext("FEV", side = 2, outer = TRUE)
+
+############### Resid Plot
+anova(FEV.lm)
+
+dev.off()
+par(mfrow = c(1,1))
+
+plot(q1.logFEV, FEV.res, xlab = "FEV", ylab = "Residuals", axes = FALSE)
+axis(1, at = c(0.0,0.2,0.4,0.6), labels = c("0.0","0.2","0.4","0.6"))
+axis(2, at = c(-1.5,-1.0,-0.5,0.0,0.5,1.0,1.5,2.0), 
+     labels = c("-1.5","-1.0","-0.5","0.0","0.5","1.0","1.5","2.0"), las = 1)
+box()
+
+
+###############################################################
+### Q2
+
+q2 <- read.csv("asst6_2021_sheet2.csv")
+
+null.mod <- lm(q2$Oxygen~1, data = q2)# this is a baseline to compare against and needs to be the first step
+
+model.2<- step(lm(q2$Oxygen~q2$Age + q2$Weight + q2$RunTime + q2$RestPulse + q2$RunPulse + q2$MaxPulse), direction = "forward")
+
+s1 <- step(null.mod, scope = list (upper~model.2), direction = "forward", data = q2)
+
+extractAIC(s1)
+
+summary(null.mod)
+summary(model.2)
+summary(s1)
+
+###############################################################
+### Q3
+
+q3 <- read.csv("asst6_2021_sheet3.csv")
+
+str(q3)#strings to factors
+
+q3$logprey <- log10(q3$preyleng_mm) #creates logged category for q3 data
+q3$logsnake <- log10(q3$snake_length_mm)
+q3$logsnake_2 <- q3$logsnake*q3$logsnake
+
+model.3 = lm(q3$logprey~q3$logsnake + q3$logsnake_2, data = q3)
+model.4 = lm(q3$logprey~q3$logsnake, data = q3)
+
+summary(model.3)
+anova(model.3) # analysis of variance and gives us sum of squared values
+
+extractAIC(model.3)
+
+par(mfrow = c(1,1), oma = c(3,3,3,3), mar = c(2,2,0,0))
+
+plot(q3$logsnake, q3$logprey, type = "p", xlab = "Snake Length (mm)",
+     ylab = "Prey Length (mm)", axes = FALSE)
+axis(1, at = c(1.5,2.0,2.5), labels = c("1.5","2.0","2.5"))
+axis(2, at = c(0.2,0.4,0.6,0.8,1.0), labels = c("0.2","0.4","0.6","0.8","1.0"), las = 1)
+z <- predict(lm(q3$logprey~q3$logsnake))
+lines(q3$logsnake, z, lwd = 2)
+mtext("Prey Length (mm)", side = 2, outer = TRUE, cex = 1.4)
+mtext("Snake Length (mm)", side = 1, outer = TRUE, cex = 1.4)
+box()
