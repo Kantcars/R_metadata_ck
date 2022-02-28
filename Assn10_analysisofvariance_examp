@@ -1,0 +1,87 @@
+setwd("C:/Users/81hoc/OneDrive/Documents/Biometry/Biom_Assn/Assignment10/")
+################### Assignment 10 ##################
+library(car)
+library(sciplot)
+library(emmeans)
+library(multcompView)
+
+### Q1
+q1 <- read.csv("asst10_2021_sheet1_2.csv")
+
+q1$Breed <- as.factor(q1$Breed)#set to factor
+q1$Age <- as.factor(q1$Age)#set to factor
+
+head(q1)#look at the start of the data frame
+
+# creates an analysis of variance set up as two factor
+aov1 <- aov(q1$Butterfat....~q1$Breed + q1$Age + q1$Breed*q1$Age, data = q1)
+summary(aov1)
+
+TukeyHSD(aov1, "q1$Breed")#tukey test
+TukeyHSD(aov1, "q1$Age")
+
+bargraph.CI(q1$Breed, q1$Butterfat...., ylim=c(2.5,6.2), axes = FALSE,
+            col ="white", ylab = "Butterfat content", xlab = "Cow Breed",
+            width = 0.75, err.width = 0.06, space = 0.3)
+axis(1, at = seq(0.6,5,0.975),
+     labels = c("","","", "Holstien-Fresian",""),
+     cex.axis = 0.95)
+axis(2, at = seq(1.5,6.0,0.5), las = 1, cex.axis = 1.2)
+box()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#############################################
+#### Q2
+levels(q1$Breed)
+
+butterfat <- aov(q2$Butterfat....~q2$Breed)
+summary(butterfat)
+Anova(butterfat, type = "III")
+
+cowsem <- emmeans(butterfat, ~"Breed", adjust = "tukey")# estimated marginal means
+summary(cowsem)
+pairs(cowsem)
+
+obj1=list(EURvsAM = c(1,-2,1,0,0))
+
+cont1 <- contrast(cowsem, obj1, adjust = "Tukey")
+cont1
+
+Ayr <- q1[1:20,]
+Ayr
+
+Gue <- q1[41:60,]
+Gue
+
+Ame <- q1[21:40,]
+Ame
+q2 <- read.csv("Eur_Am.csv")
+q2
+
+#options(contrasts = c("contr.sum", "contr.poly"))
+
+bargraph.CI(q2$Breed, q2$Butterfat...., axes = FALSE, ylim = c(2.5,6.0),
+            col = "white", ylab = "Butter fat (%)", xlab = "Cattle Breed Orgin",
+            width = 1, space = 0.2, err.width = 0.2)
+axis(2, at = seq(2.5,6.0,0.5), las = 1, cex.axis = 1.2)
+axis(1, at = c(0.7,1.9), labels = c("",""), cex.axis = 1)
+box()
+
+
+#cld(ls1, alpha = 0.05, Letters=letters)
+# lsmeans =lsmeans::lsmeans
+# ls1 <- lsmeans(aov1, "Breed", adjust = "tukey")
+# ls1
