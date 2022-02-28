@@ -1,0 +1,60 @@
+setwd("C:/Users/81hoc/OneDrive/Documents/Biometry/Biom_Assn/Assignment12")
+#################### Assignment 12 #################
+q1 <- read.csv("asst12_2021_sheet1.csv")
+
+library(car) #needs car package
+
+q1$beetle_density = as.factor(q1$beetle_density)
+q1$food_density = as.factor(q1$food_density)
+
+prop.data <- as.matrix(q1[, 2:9]) # columns 2 to 9 for eight weeks as y variables in this analysis
+
+prop.aov <- lm(prop.data ~ (beetle_density*food_density) , data = q1) #establishes factors in model
+
+idata <-data.frame(time=ordered(1:8)) #R object that establishes the time interval, 8 weeks here
+
+print( summary(Anova(prop.aov, idata=idata, idesign= ~time)) )
+
+############## Part 2 ################
+
+
+q1a<- (read.csv("beetledata.csv",header=TRUE) )
+
+library(plyr)
+
+q1b <- ddply(q1a, c("beetle_density","food_density","obs"), summarise, #get mean by replicate, which is channel
+             prop = mean(prop) )
+q1b
+
+q1a$beetle_density = as.factor(q1a$beetle_density)
+q1a$food_density = as.factor(q1a$food_density)
+
+modelq1a = lm(prop ~ beetle_density + food_density + beetle_density:food_density, data=q1b) #do the anova with 18 indept. observations
+summary(modelq1a)
+
+options(contrasts = c("contr.sum", "contr.poly"))
+
+print(Anova(modelq1a, type="III") )
+
+order(q1a$X)
+####
+par(mfrow = c(2,2))
+#outermargin area = true
+plot(q1a$prop, q1a$food_density, type = "n", ylim = c(0,1), las = 1,
+     xlab = "Proportion of Beetles", ylab = "Food Density")
+lines(q1a$X == 1, q1a$prop, lty = 1)
+lines(q1a$X == 2, q1a$prop, lty = 2)
+lines(q1a$X == 3, q1a$prop, lty = 3)
+
+plot(q1a$prop, q1a$food_density, type = "n", ylim = c(0,1), las = 1,
+     xlab = "Proportion of Beetles", ylab = "Food Density")
+lines(q1a$X == 4, q1a$prop, lty = 1)
+lines(q1a$X == 5, q1a$prop, lty = 2)
+lines(q1a$X == 6, q1a$prop, lty = 3)
+
+plot(q1a$prop, q1a$food_density, type = "n", ylim = c(0,1), las = 1,
+     xlab = "Proportion of Beetles", ylab = "Food Density")
+lines(q1a$X == 7, q1a$prop, lty = 1)
+lines(q1a$X == 8, q1a$prop, lty = 2)
+lines(q1a$X == 9, q1a$prop, lty = 3)
+
